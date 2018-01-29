@@ -1,5 +1,7 @@
 # 移动端 rem 布局
 
+[原文](http://blog.csdn.net/qq_30529627/article/details/51130845)
+
 ## 一、基本概念
 
 ### 1.物理像素(physical pixel)
@@ -106,7 +108,7 @@ iphone3gs(dpr=1)和iphone5(dpr=2)下面的测试效果，对比来看，对于1p
 ### 7. 代码
 
 ```
-  // add <meta charset="utf-8" name="viewport"> in html
+  // add <meta charset="utf-8" name="viewport" content="width=device-width"> in html
   (function (doc, win) {
   function recalc () {
 
