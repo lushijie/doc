@@ -20,7 +20,7 @@
 
 
 ### 4. dpr导致的问题
-<img src="http://p3.qhimg.com/t01e19e375adb434df0.png" />
+<img src="http://p3.qhimg.com/t01e19e375adb434df0.png"/>
 
 在普通屏幕下，1个css像素 对应 1个物理像素(1:1)；在retina 屏幕下，1个css像素对应 4个物理像素(1:4)。
 
@@ -42,15 +42,19 @@
 
 1.img标签
 
+```
 	width: 200px;
 	height: 300px;
+```
 	
 2.背景图片
 
+```
 	width: 200px;
 	height: 300px;
 	background-image: url(image@2x.jpg);
 	background-size: 200px 300px; // 或者: background-size: contain;
+```
 	
 这样的缺点，很明显，普通屏幕下：
 
@@ -72,17 +76,17 @@ iphone3gs(dpr=1)和iphone5(dpr=2)下面的测试效果，对比来看，对于1p
 
 ```
 .scale{
-    position: relative;
+	position: relative;
 }
 .scale:after{
-    content:"";
-    position: absolute;
-    bottom:0px;
-    left:0px;
-    right:0px;
-    border-bottom:1px solid #ddd;
-    -webkit-transform:scaleY(.5);
-    -webkit-transform-origin:0 0;
+	content:"";
+	position: absolute;
+	bottom:0px;
+	left:0px;
+	right:0px;
+	border-bottom:1px solid #ddd;
+	-webkit-transform:scaleY(.5);
+	-webkit-transform-origin:0 0;
 }
 ```
 
@@ -102,67 +106,67 @@ iphone3gs(dpr=1)和iphone5(dpr=2)下面的测试效果，对比来看，对于1p
 ### 7. 代码
 
 ```
-    // add <meta charset="utf-8" name="viewport"> in html
-    (function (doc, win) {
-      function recalc () {
-        
-        // rem-unit plugin sublime
-        var designWidth = 750; // 视觉图 750px, deviceWidth * dpr
-        var standard = 100; // 基准 1rem = 100px
-        var dpr = win.devicePixelRatio || 1;
-        var scale = 1 / dpr;
-        var docEl = doc.documentElement;
-        
-        // 设置data-dpr属性，留作的css hack之用
-        docEl.setAttribute('data-dpr', dpr);
+	// add <meta charset="utf-8" name="viewport"> in html
+	(function (doc, win) {
+	function recalc () {
 
-        // var deviceWidth = docEl.clientWidth;
-        var deviceWidth = win.screen.width;
-        if (win.orientation !== undefined) {
-          // 横竖屏切换
-          deviceWidth = win.screen[win.orientation === 0 ? 'width' : 'height'];
-        }
-        if (!deviceWidth) return;
+	// rem-unit plugin sublime
+	var designWidth = 750; // 视觉图 750px, deviceWidth * dpr
+	var standard = 100; // 基准 1rem = 100px
+	var dpr = win.devicePixelRatio || 1;
+	var scale = 1 / dpr;
+	var docEl = doc.documentElement;
 
-        // 设置基准，设定最大值
-        var rem = Math.min(deviceWidth * dpr * standard / designWidth, standard);
+	// 设置data-dpr属性，留作的css hack之用
+	docEl.setAttribute('data-dpr', dpr);
 
-        // 设置viewport，进行缩放，达到高清效果
-        var metaEl = doc.querySelector('meta[name="viewport"]');
-        metaEl.setAttribute('content', 'width=' + dpr * deviceWidth +
-          ',initial-scale=' + scale +
-          ',maximum-scale=' + scale +
-          ',minimum-scale=' + scale +
-          ',user-scalable=no'
-        );
+	// var deviceWidth = docEl.clientWidth;
+	var deviceWidth = win.screen.width;
+	if (win.orientation !== undefined) {
+		// 横竖屏切换
+		deviceWidth = win.screen[win.orientation === 0 ? 'width' : 'height'];
+	}
+	if (!deviceWidth) return;
 
-        // 动态写入样式
-        var styleEl = doc.createElement('style');
-        docEl.firstElementChild.appendChild(styleEl);
-        styleEl.innerHTML = 'html{font-size:' + rem + 'px!important;}'
-        + 'body {font-size: ' + 30 + 'px!important;}';
+	// 设置基准，设定最大值
+	var rem = Math.min(deviceWidth * dpr * standard / designWidth, standard);
 
-        // 绑定关键参数到 window 对象
-        win.deviceWidth = deviceWidth;
-        win.dpr = dpr;
-        win.rem = rem;
+	// 设置viewport，进行缩放，达到高清效果
+	var metaEl = doc.querySelector('meta[name="viewport"]');
+	metaEl.setAttribute('content', 'width=' + dpr * deviceWidth +
+		',initial-scale=' + scale +
+		',maximum-scale=' + scale +
+		',minimum-scale=' + scale +
+		',user-scalable=no'
+	);
 
-        // 给js调用的，某一dpr下rem和px之间的转换函数
-        win.rem2px = function(v) {
-          v = parseFloat(v);
-          return v * rem;
-        };
-        win.px2rem = function(v) {
-          v = parseFloat(v);
-          return v / rem;
-        };
-      }
+	// 动态写入样式
+	var styleEl = doc.createElement('style');
+	docEl.firstElementChild.appendChild(styleEl);
+	styleEl.innerHTML = 'html{font-size:' + rem + 'px!important;}'
+	+ 'body {font-size: ' + 30 + 'px!important;}';
 
-      // addEventListener
-      if (!doc.addEventListener) return;
-      var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
-      win.addEventListener(resizeEvt, recalc, false);
-      doc.addEventListener('DOMContentLoaded', recalc, false);
-    })(document, window);
+	// 绑定关键参数到 window 对象
+	win.deviceWidth = deviceWidth;
+	win.dpr = dpr;
+	win.rem = rem;
+
+	// 给js调用的，某一dpr下rem和px之间的转换函数
+	win.rem2px = function(v) {
+		v = parseFloat(v);
+		return v * rem;
+	};
+	win.px2rem = function(v) {
+		v = parseFloat(v);
+		return v / rem;
+	};
+	}
+
+	// addEventListener
+	if (!doc.addEventListener) return;
+	var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+	win.addEventListener(resizeEvt, recalc, false);
+	doc.addEventListener('DOMContentLoaded', recalc, false);
+	})(document, window);
     
 ```
